@@ -47,11 +47,48 @@ def add(*args):
 
     # TODO: Fill sum with the correct value, based on the
     # args provided.
-    sum = "0"
+    arg_list = []
+    for arg in args:
+        arg_list.append(arg)
 
-    return sum
+    return sum(arg_list)
 
-# TODO: Add functions for handling more arithmetic operations.
+
+def multiply(*args):
+    arg_list = []
+    for arg in args:
+        arg_list.append(arg)
+
+    return arg_list[0]*arg_list[1]
+
+
+def substract(*args):
+    arg_list = []
+    for arg in args:
+        arg_list.append(arg)
+
+    return arg_list[0]-arg_list[1]
+
+
+def divide(*args):
+    arg_list = []
+    for arg in args:
+        arg_list.append(arg)
+    if arg_list[1] == 0:
+        raise ZeroDivisionError
+
+    return arg_list[0]/arg_list[1]
+
+
+def index(*args):
+    return """
+    <html><h1>Here's how to use this page...</h1>
+    <p>Please input http://localhost:8080/<math method>/number1/number2</p>
+    <p>for example if you input http://localhost:8080/multiple/3/5</p>
+    <p>you should be getting 15 from webpage.</p>
+    </html>
+    """
+
 
 def resolve_path(path):
     """
@@ -63,10 +100,29 @@ def resolve_path(path):
     # examples provide the correct *syntax*, but you should
     # determine the actual values of func and args using the
     # path.
-    func = add
-    args = ['25', '32']
+
+    func = {
+        "": index,
+        "add": add,
+        "multiply": multiply,
+        "sub": subtract,
+        "divide": divide}
+
+    path = path.strip('/').split('/')
+    print(path)
+    func_name = path[0]
+    print(func_name)
+    args = path[1:]
+    args = map(int, args)
+    print(args)
+
+    try:
+        func = func[func_name]
+    except KeyError:
+        raise NameError
 
     return func, args
+
 
 def application(environ, start_response):
     # TODO: Your application code from the book database
@@ -76,9 +132,29 @@ def application(environ, start_response):
     #
     # TODO (bonus): Add error handling for a user attempting
     # to divide by zero.
-    pass
+    headers = [('Content-type', 'text/html')]
+    try:
+        path = environ.get('PATH_INFO', None)
+        if path is None:
+            raise NameError
+        func, args = resolve_path(path)
+        body = func(*args)
+        status = "200 OK"
+    except NameError:
+        status = "404 Not Found"
+        body = "<h1>Not Found</h1>"
+    except Exception:
+        status = "500 Internal Server Error"
+        body = "<h1> Internal Server Error</h1>"
+    finally:
+        headers.append(('Content-length', str(len(body))))
+        start_response(status, headers)
+        return [body.encode('utf8')]
+
 
 if __name__ == '__main__':
     # TODO: Insert the same boilerplate wsgiref simple
     # server creation that you used in the book database.
-    pass
+    from wsgiref.simple_server import make_server
+    srv = make_server('172.16.68.3', 8080, application)
+    srv.serve_forever()
