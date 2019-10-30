@@ -51,7 +51,7 @@ def add(*args):
     for arg in args:
         arg_list.append(arg)
 
-    return sum(arg_list)
+    return str(sum(arg_list))
 
 
 def multiply(*args):
@@ -59,7 +59,7 @@ def multiply(*args):
     for arg in args:
         arg_list.append(arg)
 
-    return arg_list[0]*arg_list[1]
+    return str(arg_list[0]*arg_list[1])
 
 
 def substract(*args):
@@ -67,7 +67,7 @@ def substract(*args):
     for arg in args:
         arg_list.append(arg)
 
-    return arg_list[0]-arg_list[1]
+    return str(arg_list[0]-arg_list[1])
 
 
 def divide(*args):
@@ -77,14 +77,14 @@ def divide(*args):
     if arg_list[1] == 0:
         raise ZeroDivisionError
 
-    return arg_list[0]/arg_list[1]
+    return str(arg_list[0]/arg_list[1])
 
 
 def index(*args):
     return """
     <html><h1>Here's how to use this page...</h1>
-    <p>Please input http://localhost:8080/<math method>/number1/number2</p>
-    <p>for example if you input http://localhost:8080/multiple/3/5</p>
+    <p>Please input http://localhost:8080/math_method/number1/number2</p>
+    <p>for example if you input http://localhost:8080/multiply/3/5</p>
     <p>you should be getting 15 from webpage.</p>
     </html>
     """
@@ -101,12 +101,12 @@ def resolve_path(path):
     # determine the actual values of func and args using the
     # path.
 
-    func = {
-        "": index,
-        "add": add,
-        "multiply": multiply,
-        "sub": subtract,
-        "divide": divide}
+    func_dict = {
+        '': index,
+        'add': add,
+        'multiply': multiply,
+        'sub': substract,
+        'divide': divide}
 
     path = path.strip('/').split('/')
     print(path)
@@ -117,7 +117,7 @@ def resolve_path(path):
     print(args)
 
     try:
-        func = func[func_name]
+        func = func_dict[func_name]
     except KeyError:
         raise NameError
 
@@ -137,6 +137,7 @@ def application(environ, start_response):
         path = environ.get('PATH_INFO', None)
         if path is None:
             raise NameError
+        print(path)
         func, args = resolve_path(path)
         body = func(*args)
         status = "200 OK"
