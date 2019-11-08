@@ -62,7 +62,7 @@ def multiply(*args):
     return str(arg_list[0]*arg_list[1])
 
 
-def substract(*args):
+def subtract(*args):
     arg_list = []
     for arg in args:
         arg_list.append(arg)
@@ -105,7 +105,7 @@ def resolve_path(path):
         '': index,
         'add': add,
         'multiply': multiply,
-        'sub': substract,
+        'sub': subtract,
         'divide': divide}
 
     path = path.strip('/').split('/')
