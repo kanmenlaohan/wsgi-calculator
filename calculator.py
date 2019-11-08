@@ -157,5 +157,5 @@ if __name__ == '__main__':
     # TODO: Insert the same boilerplate wsgiref simple
     # server creation that you used in the book database.
     from wsgiref.simple_server import make_server
-    srv = make_server('172.16.68.3', 8080, application)
+    srv = make_server('0.0.0.0', 8080, application)
     srv.serve_forever()
